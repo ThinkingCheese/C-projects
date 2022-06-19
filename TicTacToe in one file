@@ -1,0 +1,118 @@
+#include <vector>
+#include <iostream>
+#include <time.h>
+
+using namespace std;
+
+class Game{
+	private:
+		vector<string> grid = { "0 |","1 |","2\n",
+								"3 |","4 |","5\n",
+								"6 |","7 |","8\n"
+		};
+		void printGrid() {
+			for (int i = 0; i < gridCopy.size(); i++) {
+				cout << gridCopy.at(i);
+			}
+		}
+		vector<string> gridCopy;
+		void choose(char symbol) {
+			int pos;
+			cout << "Choose a position (0-8): ";
+			cin >> pos;
+			if (gridCopy.at(pos)[0] != 'O' && gridCopy.at(pos)[0] != 'X' && pos < gridCopy.size()) {
+				gridCopy.at(pos)[0] = symbol;
+				return;
+			}
+			// otherwise
+			cout << "Position already taken!\n";
+			choose(symbol);
+		}
+
+		bool checkBoard() {
+			for (int i = 0; i < gridCopy.size(); i += 3) { // jumps to start of each row per  (checks across each row)
+				if (gridCopy.at(i)[0] == gridCopy.at(i + 1)[0] && gridCopy.at(i)[0] == gridCopy.at(i + 2)[0]) {
+					cout << "true";
+					return true;  // not true for whatever reason
+				}
+			}
+			for (int i = 0; i < 3; i++) { // checks below each column
+				if (gridCopy.at(i)[0] == gridCopy.at(i + 3)[0] && gridCopy.at(i)[0] == gridCopy.at(i + 6)[0])
+					return true;
+			}
+
+			// checks the X part.. if you play tic tac toe you know what I mean
+
+			if (gridCopy.at(0)[0] == gridCopy.at(4)[0] && gridCopy.at(0)[0] == gridCopy.at(8)[0])
+				return true;
+			if (gridCopy.at(2)[0] == gridCopy.at(4)[0] && gridCopy.at(2)[0] == gridCopy.at(6)[0])
+				return true;
+
+			// otherwise 
+			return false;
+		}
+		void aiChoose() {
+			int pos = rand() % gridCopy.size(); // randomizes position
+			if (gridCopy.at(pos)[0] != 'X' && gridCopy.at(pos)[0] != 'O') { // choosing despite something being there
+				gridCopy.at(pos)[0] = 'O';
+				return;
+			}
+			aiChoose();
+		}
+	public:
+
+		Game() {
+			gridCopy = grid;
+			srand(time(NULL));
+		}
+
+		void bot() {
+			printGrid();
+			cout << "\n\nYour turn\n\n";
+			choose('X');
+			if (checkBoard()) {
+				cout << "You win! Game over.\n";
+				printGrid();
+				return;
+			}
+			aiChoose();
+			if (checkBoard()) {
+				cout << "Bot wins! Game over.\n\n";
+				printGrid();
+				return;
+			}
+			bot();
+		}
+
+		void multi() {
+			string name1;
+			string name2;
+
+			cout << "Enter the first person's name: ";
+			cin >> name1;
+			cout << "Enter the second person's name: ";
+			cin >> name2;
+
+			while (true) {
+				printGrid();
+				cout << "\n\n" << name1 << "\'s turn.\n\n";
+				choose('X');
+				if (checkBoard()) {
+					cout << name1 << " has won! Game over.\n";
+					printGrid();
+					break;
+				}
+				printGrid();
+				cout << "\n\n" << name2 << "\'s turn.\n\n";
+				choose('O');
+				if (checkBoard()) {
+					cout << name2 << " has won! Game over.\n";
+					printGrid();
+					return;
+				}
+			}
+			
+
+		}
+};
+
